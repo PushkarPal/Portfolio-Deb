@@ -4,6 +4,8 @@ import About from "./components/About";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
 
+const TRANSITION_MS = 700;
+
 const getRoute = () => {
   const hash = window.location.hash.replace(/^#/, "") || "home";
   if (hash === "about" || hash === "contact") return hash;
@@ -17,19 +19,32 @@ const getWorkIndex = (route) => {
 };
 
 export default function App() {
-  const [route, setRoute] = useState(getRoute);
-  const [direction, setDirection] = useState("vertical");
-  const routeRef = useRef(getRoute());
+  const initialRoute = getRoute();
+  const [route, setRoute] = useState(initialRoute);
+  const [transition, setTransition] = useState(null);
+  const routeRef = useRef(initialRoute);
+  const timerRef = useRef(null);
+
+  const startTransition = useCallback((nextRoute, direction) => {
+    const previousRoute = routeRef.current;
+    if (nextRoute === previousRoute) return;
+
+    routeRef.current = nextRoute;
+    setTransition({ from: previousRoute, to: nextRoute, direction });
+    setRoute(nextRoute);
+
+    window.clearTimeout(timerRef.current);
+    timerRef.current = window.setTimeout(() => {
+      setTransition(null);
+    }, TRANSITION_MS);
+  }, []);
 
   const navigate = useCallback((nextRoute, nextDirection = "vertical") => {
     if (nextRoute === routeRef.current) return;
-
-    routeRef.current = nextRoute;
-    setDirection(nextDirection);
     window.history.pushState({}, "", `#${nextRoute}`);
-    setRoute(nextRoute);
+    startTransition(nextRoute, nextDirection);
     window.scrollTo({ top: 0, behavior: "auto" });
-  }, []);
+  }, [startTransition]);
 
   useEffect(() => {
     const onLocationChange = () => {
@@ -39,43 +54,59 @@ export default function App() {
 
       const previousWork = getWorkIndex(previousRoute);
       const nextWork = getWorkIndex(nextRoute);
+      let direction = "vertical";
 
       if (previousWork !== null && nextWork !== null) {
-        setDirection(nextWork > previousWork ? "vertical" : "vertical-reverse");
+        direction = nextWork > previousWork ? "vertical" : "vertical-reverse";
       }
 
-      routeRef.current = nextRoute;
-      setRoute(nextRoute);
+      startTransition(nextRoute, direction);
       window.scrollTo({ top: 0, behavior: "auto" });
     };
 
     window.addEventListener("popstate", onLocationChange);
-    window.addEventListener("hashchange", onLocationChange);
     return () => {
       window.removeEventListener("popstate", onLocationChange);
-      window.removeEventListener("hashchange", onLocationChange);
+      window.clearTimeout(timerRef.current);
     };
-  }, []);
+  }, [startTransition]);
 
-  const workMatch = route.match(/^work(?:\/(\d+))?$/);
-  const workIndex = workMatch ? Math.max(0, Math.min(4, Number(workMatch[1] || 1) - 1)) : 0;
+  const renderPage = (pageRoute, interactive = true) => {
+    const workMatch = pageRoute.match(/^work(?:\/(\d+))?$/);
+    const workIndex = workMatch
+      ? Math.max(0, Math.min(4, Number(workMatch[1] || 1) - 1))
+      : 0;
 
-  let page;
-  if (route === "about") {
-    page = <About navigate={navigate} />;
-  } else if (route === "contact") {
-    page = <Contact navigate={navigate} />;
-  } else if (workMatch) {
-    page = <Projects navigate={navigate} initialWork={workIndex} />;
-  } else {
-    page = <Home navigate={navigate} />;
-  }
+    if (pageRoute === "about") return <About navigate={navigate} />;
+    if (pageRoute === "contact") return <Contact navigate={navigate} />;
+    if (workMatch) {
+      return (
+        <Projects
+          navigate={navigate}
+          initialWork={workIndex}
+          interactive={interactive}
+        />
+      );
+    }
+    return <Home navigate={navigate} />;
+  };
 
   return (
     <div className="site-shell">
-      <div key={route} className={`page-transition page-transition--${direction}`}>
-        {page}
-      </div>
+      {transition ? (
+        <div className={`route-transition route-transition--${transition.direction}`}>
+          <div className="route-layer route-layer--outgoing">
+            {renderPage(transition.from, false)}
+          </div>
+          <div className="route-layer route-layer--incoming">
+            {renderPage(transition.to, true)}
+          </div>
+        </div>
+      ) : (
+        <div className="route-layer route-layer--current">
+          {renderPage(route, true)}
+        </div>
+      )}
     </div>
   );
 }
