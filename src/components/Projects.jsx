@@ -36,7 +36,7 @@ function WorkSlide({ work, index, navigateWork, navigate }) {
       {hasNext && (
         <button
           className="next-arrow"
-          onClick={() => navigateWork(index + 1, "horizontal")}
+          onClick={() => navigateWork(index + 1)}
           aria-label="Next work"
         >
           →
@@ -55,18 +55,20 @@ export default function Projects({ navigate, initialWork }) {
   const wheelLocked = useRef(false);
   const unlockTimer = useRef(null);
 
-  const navigateWork = (nextIndex, direction = "vertical") => {
+  const moveToWork = (nextIndex, transitionDirection) => {
     const next = Math.max(0, Math.min(works.length - 1, nextIndex));
-    if (next === currentRef.current) return;
+    const previous = currentRef.current;
+    if (next === previous) return;
 
     currentRef.current = next;
     setCurrent(next);
-    window.history.pushState({}, "", `#work/${next + 1}`);
 
-    if (direction === "vertical") {
-      // Keep the work page mounted so a single wheel gesture cannot
-      // create a new listener and jump through multiple works.
-      window.scrollTo({ top: 0, behavior: "auto" });
+    // Change the hash without asking App to remount Projects.
+    window.history.replaceState({}, "", `#work/${next + 1}`);
+
+    if (transitionDirection === "horizontal") {
+      // Arrow navigation uses the horizontal page transition only.
+      navigate(`work/${next + 1}`, "horizontal");
     }
   };
 
@@ -96,17 +98,7 @@ export default function Projects({ navigate, initialWork }) {
 
   useEffect(() => {
     const onWheel = (event) => {
-      if (Math.abs(event.deltaY) < 10) return;
-
-      // A trackpad sends many wheel events for one physical gesture.
-      // Lock until the wheel has been quiet long enough for the gesture to end.
-      if (wheelLocked.current) {
-        window.clearTimeout(unlockTimer.current);
-        unlockTimer.current = window.setTimeout(() => {
-          wheelLocked.current = false;
-        }, 550);
-        return;
-      }
+      if (Math.abs(event.deltaY) < 10 || wheelLocked.current) return;
 
       const direction = event.deltaY > 0 ? 1 : -1;
       const previous = currentRef.current;
@@ -121,9 +113,9 @@ export default function Projects({ navigate, initialWork }) {
       window.clearTimeout(unlockTimer.current);
       unlockTimer.current = window.setTimeout(() => {
         wheelLocked.current = false;
-      }, 550);
+      }, 650);
 
-      navigateWork(next, "vertical");
+      moveToWork(next, "vertical");
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -146,14 +138,14 @@ export default function Projects({ navigate, initialWork }) {
       <div className="work-viewport">
         <div
           className="work-track"
-          style={{ transform: `translateY(-${current * 82}vh)` }}
+          style={{ transform: `translate3d(0, -${current * 82}vh, 0)` }}
         >
           {works.map((work, index) => (
             <WorkSlide
               key={work.number}
               work={work}
               index={index}
-              navigateWork={navigateWork}
+              navigateWork={moveToWork}
               navigate={navigate}
             />
           ))}
