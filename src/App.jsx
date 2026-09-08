@@ -54,7 +54,7 @@ export default function App() {
       let direction = "vertical";
 
       if (previousWork !== null && nextWork !== null) {
-        direction = nextWork > previousWork ? "vertical" : "vertical-reverse";
+        direction = "work-local";
       }
 
       startTransition(nextRoute, direction);
