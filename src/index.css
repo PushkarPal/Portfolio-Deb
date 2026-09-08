@@ -98,6 +98,9 @@ button { color: inherit; }
 .interest-grid p { color: #77776f; font-size: .85rem; margin: 0; }
 .bottom-link { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); border-bottom: 1px solid #6d6d65; padding-bottom: .45rem; white-space: nowrap; }
 .bottom-link:hover { transform: translateX(calc(-50% + 5px)); }
+.explore-work-button { position: absolute; top: 5vh; right: 7vw; border: 1px solid #3a3a35; background: #11110f; padding: .75rem 1.1rem; cursor: pointer; transition: transform .25s ease, background .25s ease, color .25s ease; z-index: 10; }
+.explore-work-button span { margin-left: 1rem; }
+.explore-work-button:hover { transform: translateX(-5px); background: #f5f5f0; color: #0b0b0a; }
 
 .work-page { height: 100vh; overflow: hidden; }
 .work-topline { height: 18vh; padding: 4vh 6vw 0; display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 1.5rem; position: relative; z-index: 10; }
@@ -167,4 +170,5 @@ button { color: inherit; }
   .work-slide--reversed .work-copy { order: initial; }
   .work-image { max-width: 600px; }
   .contact-links { grid-template-columns: repeat(2, 1fr); }
+  .explore-work-button { top: 4vh; right: 7vw; }
 }
