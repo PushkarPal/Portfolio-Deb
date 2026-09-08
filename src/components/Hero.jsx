@@ -1,1 +1,25 @@
-export default function Hero() { return (<section className="pt-32 pb-20 px-4"><div className="container mx-auto text-center"><h1 className="text-5xl font-bold mb-6">Hi, I'm a Software Engineer</h1><p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">I build exceptional and accessible digital experiences for the web.</p><a href="#contact" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-colors">Get In Touch</a></div></section>); }
+export default function Hero({ navigate }) {
+  return (
+    <main className="screen home-screen">
+      <div className="home-copy">
+        <p className="eyebrow">WEB DEVELOPMENT</p>
+        <h1>Deb</h1>
+        <p className="home-intro">Building thoughtful experiences for the web.</p>
+        <div className="home-actions">
+          <button onClick={() => navigate("about", "vertical")} className="text-button">
+            About Me <span>↗</span>
+          </button>
+          <button onClick={() => navigate("work/1", "horizontal")} className="text-button text-button--filled">
+            See My Work <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="portrait-placeholder" aria-label="Client photo placeholder">
+        <span>CLIENT<br />PHOTO</span>
+      </div>
+
+      <p className="corner-note">PORTFOLIO / 2026</p>
+    </main>
+  );
+}
