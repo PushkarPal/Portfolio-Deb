@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const works = [1, 2, 3, 4, 5].map((number) => ({
   number: String(number).padStart(2, "0"),
@@ -61,14 +61,18 @@ function WorkSlide({ work, index, navigate }) {
 
 export default function Projects({ navigate, initialWork }) {
   const [current, setCurrent] = useState(initialWork);
+  const wheelLocked = useRef(false);
 
   useEffect(() => {
     setCurrent(initialWork);
+    wheelLocked.current = false;
   }, [initialWork]);
 
   useEffect(() => {
     const onWheel = (event) => {
-      if (Math.abs(event.deltaY) < 10) return;
+      if (Math.abs(event.deltaY) < 10 || wheelLocked.current) return;
+
+      wheelLocked.current = true;
 
       setCurrent((previous) => {
         const next = event.deltaY > 0
@@ -77,10 +81,16 @@ export default function Projects({ navigate, initialWork }) {
 
         if (next !== previous) {
           navigate(`work/${next + 1}`, "vertical");
+        } else {
+          wheelLocked.current = false;
         }
 
         return next;
       });
+
+      window.setTimeout(() => {
+        wheelLocked.current = false;
+      }, 800);
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
