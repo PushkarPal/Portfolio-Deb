@@ -12,7 +12,7 @@ function Menu({ navigate }) {
         <span /><span /><span />
       </button>
       <div className="menu-panel">
-        <button onClick={() => navigate("home", "horizontal")}>Home</button>
+        <button onClick={() => navigate("home", "vertical")}>Home</button>
         <button onClick={() => navigate("about", "vertical")}>About Me</button>
       </div>
     </div>
@@ -27,7 +27,7 @@ function MovingContent({ work, index, className = "" }) {
       <div className="work-copy">
         <h3>{work.title}</h3>
         <p>{work.description}</p>
-        <button className="work-link">See Work <span>↗</span></button>
+        <button className="work-link" type="button">See Work <span>↗</span></button>
       </div>
       <div className="work-image"><span>WORK<br />IMAGE</span></div>
     </div>
@@ -69,6 +69,10 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
 
     navigate(`work/${next + 1}`, "work-local");
     startLocalFlow(next, direction);
+  };
+
+  const goToContact = () => {
+    window.location.hash = "contact";
   };
 
   useEffect(() => {
@@ -164,6 +168,7 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
           className="previous-arrow"
           onClick={() => navigateWork(current - 1, "previous")}
           aria-label="Previous work"
+          type="button"
         >
           ←
         </button>
@@ -174,12 +179,13 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
           className="next-arrow"
           onClick={() => navigateWork(current + 1, "next")}
           aria-label="Next work"
+          type="button"
         >
           →
         </button>
       )}
 
-      <button className="bottom-link" onClick={() => navigate("contact", "vertical")}>
+      <button className="bottom-link" onClick={goToContact} type="button">
         Collab / Contact <span>→</span>
       </button>
     </main>
