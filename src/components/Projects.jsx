@@ -22,6 +22,7 @@ function Menu({ navigate }) {
 
 function WorkSlide({ work, index, navigate }) {
   const reversed = index % 2 === 1;
+  const hasNext = index < works.length - 1;
 
   return (
     <article className={`work-slide ${reversed ? "work-slide--reversed" : ""}`}>
@@ -32,9 +33,15 @@ function WorkSlide({ work, index, navigate }) {
         <button className="work-link">See Work <span>↗</span></button>
       </div>
       <div className="work-image"><span>WORK<br />IMAGE</span></div>
-      <button className="next-arrow" onClick={() => navigate(`work/${index + 2}`, "horizontal")} aria-label="Next work">
-        →
-      </button>
+      {hasNext && (
+        <button
+          className="next-arrow"
+          onClick={() => navigate(`work/${index + 2}`, "horizontal")}
+          aria-label="Next work"
+        >
+          →
+        </button>
+      )}
       <button className="bottom-link" onClick={() => navigate("contact", "vertical")}>
         Collab / Contact <span>→</span>
       </button>
@@ -52,16 +59,23 @@ export default function Projects({ navigate, initialWork }) {
   useEffect(() => {
     const onWheel = (event) => {
       if (Math.abs(event.deltaY) < 10) return;
-      const next = event.deltaY > 0 ? Math.min(works.length - 1, current + 1) : Math.max(0, current - 1);
-      if (next !== current) {
-        navigate(`work/${next + 1}`, "vertical");
-        setCurrent(next);
-      }
+
+      setCurrent((previous) => {
+        const next = event.deltaY > 0
+          ? Math.min(works.length - 1, previous + 1)
+          : Math.max(0, previous - 1);
+
+        if (next !== previous) {
+          navigate(`work/${next + 1}`, "vertical");
+        }
+
+        return next;
+      });
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
     return () => window.removeEventListener("wheel", onWheel);
-  }, [current, navigate]);
+  }, [navigate]);
 
   return (
     <main className="work-page">
@@ -74,8 +88,18 @@ export default function Projects({ navigate, initialWork }) {
         <p className="work-count">{String(current + 1).padStart(2, "0")} / 05</p>
       </div>
       <div className="work-viewport">
-        <div className="work-track" style={{ transform: `translateY(-${current * 100}%)` }}>
-          {works.map((work, index) => <WorkSlide key={work.number} work={work} index={index} navigate={navigate} />)}
+        <div
+          className="work-track"
+          style={{ transform: `translateY(-${current * 82}vh)` }}
+        >
+          {works.map((work, index) => (
+            <WorkSlide
+              key={work.number}
+              work={work}
+              index={index}
+              navigate={navigate}
+            />
+          ))}
         </div>
       </div>
     </main>
