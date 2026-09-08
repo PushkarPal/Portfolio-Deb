@@ -62,7 +62,7 @@ function WorkSlide({ work, index, navigateWork, navigate }) {
   );
 }
 
-export default function Projects({ navigate, initialWork }) {
+export default function Projects({ navigate, initialWork, interactive = true }) {
   const [current, setCurrent] = useState(initialWork);
   const currentRef = useRef(initialWork);
   const wheelLocked = useRef(false);
@@ -73,14 +73,16 @@ export default function Projects({ navigate, initialWork }) {
     const previous = currentRef.current;
     if (next === previous) return;
 
+    if (transition === "horizontal" || transition === "horizontal-reverse") {
+      // Let App render both pages simultaneously so the arrow transition is
+      // a continuous horizontal flow rather than a vanish-and-enter effect.
+      navigate(`work/${next + 1}`, transition);
+      return;
+    }
+
     currentRef.current = next;
     setCurrent(next);
-
-    if (transition === "horizontal" || transition === "horizontal-reverse") {
-      navigate(`work/${next + 1}`, transition);
-    } else {
-      window.history.replaceState({}, "", `#work/${next + 1}`);
-    }
+    window.history.replaceState({}, "", `#work/${next + 1}`);
   };
 
   useEffect(() => {
@@ -89,6 +91,8 @@ export default function Projects({ navigate, initialWork }) {
   }, [initialWork]);
 
   useEffect(() => {
+    if (!interactive) return undefined;
+
     const onWheel = (event) => {
       if (Math.abs(event.deltaY) < 12) return;
 
@@ -124,7 +128,7 @@ export default function Projects({ navigate, initialWork }) {
       window.removeEventListener("wheel", onWheel);
       window.clearTimeout(unlockTimer.current);
     };
-  }, []);
+  }, [interactive]);
 
   return (
     <main className="work-page">
