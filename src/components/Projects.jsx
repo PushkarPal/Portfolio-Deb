@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 const works = [1, 2, 3, 4, 5].map((number) => ({
-  number: String(number).padStart(2, "0"),
   title: `Work ${number}`,
   description: "Project description will be added once the client's work details are available.",
 }));
@@ -28,7 +27,6 @@ function WorkSlide({ work, index, navigateWork, navigate }) {
   return (
     <article className={`work-slide ${reversed ? "work-slide--reversed" : ""}`}>
       <div className="work-copy">
-        <p className="work-number">{work.number}</p>
         <h3>{work.title}</h3>
         <p>{work.description}</p>
         <button className="work-link">See Work <span>↗</span></button>
@@ -147,7 +145,7 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
         >
           {works.map((work, index) => (
             <WorkSlide
-              key={work.number}
+              key={index}
               work={work}
               index={index}
               navigateWork={navigateWork}
