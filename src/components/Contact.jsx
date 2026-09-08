@@ -28,7 +28,7 @@ export default function Contact({ navigate }) {
       </div>
 
       <section className="contact-content">
-        <h3>Have an idea?<br />Let's deploy something.</h3>
+        <h3>Have an idea?<br />Let's deploy it</h3>
         <div className="contact-links">
           {links.map((link) => (
             <a href="#" key={link.name} onClick={(event) => event.preventDefault()}>
