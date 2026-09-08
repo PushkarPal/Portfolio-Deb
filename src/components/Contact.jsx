@@ -29,7 +29,7 @@ export default function Contact({ navigate }) {
 
       <section className="contact-content float-stagger">
         <h3>Have an idea?<br />Let's deploy it</h3>
-        <div className="contact-links">
+        <div className="contact-links float-stagger">
           {links.map((link) => (
             <a href="#" key={link.name} onClick={(event) => event.preventDefault()}>
               <span className="social-icon">{link.icon}</span>
