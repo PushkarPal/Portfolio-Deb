@@ -20,10 +20,9 @@ function Menu({ navigate }) {
   );
 }
 
-function WorkSlide({ work, index, navigate }) {
+function WorkSlide({ work, index, navigateWork, navigate }) {
   const reversed = index % 2 === 1;
   const hasNext = index < works.length - 1;
-  const hasPrevious = index > 0;
 
   return (
     <article className={`work-slide ${reversed ? "work-slide--reversed" : ""}`}>
@@ -34,19 +33,10 @@ function WorkSlide({ work, index, navigate }) {
         <button className="work-link">See Work <span>↗</span></button>
       </div>
       <div className="work-image"><span>WORK<br />IMAGE</span></div>
-      {hasPrevious && (
-        <button
-          className="previous-arrow"
-          onClick={() => navigate(`work/${index}`, "horizontal")}
-          aria-label="Previous work"
-        >
-          ←
-        </button>
-      )}
       {hasNext && (
         <button
           className="next-arrow"
-          onClick={() => navigate(`work/${index + 2}`, "horizontal")}
+          onClick={() => navigateWork(index + 1, "horizontal")}
           aria-label="Next work"
         >
           →
@@ -63,16 +53,60 @@ export default function Projects({ navigate, initialWork }) {
   const [current, setCurrent] = useState(initialWork);
   const currentRef = useRef(initialWork);
   const wheelLocked = useRef(false);
+  const unlockTimer = useRef(null);
+
+  const navigateWork = (nextIndex, direction = "vertical") => {
+    const next = Math.max(0, Math.min(works.length - 1, nextIndex));
+    if (next === currentRef.current) return;
+
+    currentRef.current = next;
+    setCurrent(next);
+    window.history.pushState({}, "", `#work/${next + 1}`);
+
+    if (direction === "vertical") {
+      // Keep the work page mounted so a single wheel gesture cannot
+      // create a new listener and jump through multiple works.
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  };
 
   useEffect(() => {
-    setCurrent(initialWork);
     currentRef.current = initialWork;
-    wheelLocked.current = false;
+    setCurrent(initialWork);
   }, [initialWork]);
 
   useEffect(() => {
+    const onPopState = () => {
+      const match = window.location.hash.match(/^#work\/(\d+)$/);
+      if (!match) return;
+
+      const next = Math.max(0, Math.min(works.length - 1, Number(match[1]) - 1));
+      currentRef.current = next;
+      setCurrent(next);
+      wheelLocked.current = true;
+      window.clearTimeout(unlockTimer.current);
+      unlockTimer.current = window.setTimeout(() => {
+        wheelLocked.current = false;
+      }, 500);
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  useEffect(() => {
     const onWheel = (event) => {
-      if (Math.abs(event.deltaY) < 10 || wheelLocked.current) return;
+      if (Math.abs(event.deltaY) < 10) return;
+
+      // A trackpad sends many wheel events for one physical gesture.
+      // Lock until the wheel has been quiet long enough for the gesture to end.
+      if (wheelLocked.current) {
+        window.clearTimeout(unlockTimer.current);
+        unlockTimer.current = window.setTimeout(() => {
+          wheelLocked.current = false;
+        }, 550);
+        return;
+      }
 
       const direction = event.deltaY > 0 ? 1 : -1;
       const previous = currentRef.current;
@@ -82,19 +116,22 @@ export default function Projects({ navigate, initialWork }) {
 
       if (next === previous) return;
 
+      event.preventDefault();
       wheelLocked.current = true;
-      currentRef.current = next;
-      setCurrent(next);
-      navigate(`work/${next + 1}`, "vertical");
-
-      window.setTimeout(() => {
+      window.clearTimeout(unlockTimer.current);
+      unlockTimer.current = window.setTimeout(() => {
         wheelLocked.current = false;
-      }, 850);
+      }, 550);
+
+      navigateWork(next, "vertical");
     };
 
-    window.addEventListener("wheel", onWheel, { passive: true });
-    return () => window.removeEventListener("wheel", onWheel);
-  }, [navigate]);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.clearTimeout(unlockTimer.current);
+    };
+  }, []);
 
   return (
     <main className="work-page">
@@ -116,6 +153,7 @@ export default function Projects({ navigate, initialWork }) {
               key={work.number}
               work={work}
               index={index}
+              navigateWork={navigateWork}
               navigate={navigate}
             />
           ))}
