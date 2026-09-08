@@ -11,6 +11,11 @@ const getRoute = () => {
   return "home";
 };
 
+const getWorkIndex = (route) => {
+  const match = route.match(/^work\/(\d+)$/);
+  return match ? Math.max(0, Math.min(4, Number(match[1]) - 1)) : null;
+};
+
 export default function App() {
   const [route, setRoute] = useState(getRoute);
   const [direction, setDirection] = useState("vertical");
@@ -18,6 +23,7 @@ export default function App() {
 
   const navigate = useCallback((nextRoute, nextDirection = "vertical") => {
     if (nextRoute === routeRef.current) return;
+
     routeRef.current = nextRoute;
     setDirection(nextDirection);
     window.history.pushState({}, "", `#${nextRoute}`);
@@ -31,15 +37,11 @@ export default function App() {
       const previousRoute = routeRef.current;
       if (previousRoute === nextRoute) return;
 
-      const previousWork = previousRoute.match(/^work\/(\d+)$/);
-      const nextWork = nextRoute.match(/^work\/(\d+)$/);
+      const previousWork = getWorkIndex(previousRoute);
+      const nextWork = getWorkIndex(nextRoute);
 
-      if (previousWork && nextWork) {
-        const previousIndex = Number(previousWork[1]);
-        const nextIndex = Number(nextWork[1]);
-        setDirection(nextIndex > previousIndex ? "vertical" : "vertical-reverse");
-      } else {
-        setDirection("vertical");
+      if (previousWork !== null && nextWork !== null) {
+        setDirection(nextWork > previousWork ? "vertical" : "vertical-reverse");
       }
 
       routeRef.current = nextRoute;
