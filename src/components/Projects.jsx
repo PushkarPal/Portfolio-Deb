@@ -23,6 +23,7 @@ function Menu({ navigate }) {
 function WorkSlide({ work, index, navigate }) {
   const reversed = index % 2 === 1;
   const hasNext = index < works.length - 1;
+  const hasPrevious = index > 0;
 
   return (
     <article className={`work-slide ${reversed ? "work-slide--reversed" : ""}`}>
@@ -33,6 +34,15 @@ function WorkSlide({ work, index, navigate }) {
         <button className="work-link">See Work <span>↗</span></button>
       </div>
       <div className="work-image"><span>WORK<br />IMAGE</span></div>
+      {hasPrevious && (
+        <button
+          className="previous-arrow"
+          onClick={() => navigate(`work/${index}`, "horizontal")}
+          aria-label="Previous work"
+        >
+          ←
+        </button>
+      )}
       {hasNext && (
         <button
           className="next-arrow"
