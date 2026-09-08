@@ -15,7 +15,7 @@ function Menu({ navigate }) {
 export default function About({ navigate }) {
   return (
     <main className="page about-page">
-      <div className="page-heading">
+      <div className="page-heading float-stagger">
         <Menu navigate={navigate} />
         <h2>About Me</h2>
       </div>
@@ -24,7 +24,7 @@ export default function About({ navigate }) {
         Explore my work <span>→</span>
       </button>
 
-      <section className="about-layout">
+      <section className="about-layout float-stagger">
         <div className="about-image portrait-placeholder">
           <span>CLIENT<br />PHOTO</span>
         </div>
