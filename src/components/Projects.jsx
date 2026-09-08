@@ -8,12 +8,12 @@ const works = [1, 2, 3, 4, 5].map((number) => ({
 function Menu({ navigate }) {
   return (
     <div className="menu-wrap">
-      <button className="menu-button" aria-label="Open navigation">
+      <button type="button" className="menu-button" aria-label="Open navigation">
         <span /><span /><span />
       </button>
       <div className="menu-panel">
-        <button onClick={() => navigate("home", "vertical")}>Home</button>
-        <button onClick={() => navigate("about", "vertical")}>About Me</button>
+        <button type="button" onClick={() => navigate("home", "vertical")}>Home</button>
+        <button type="button" onClick={() => navigate("about", "vertical")}>About Me</button>
       </div>
     </div>
   );
@@ -27,7 +27,7 @@ function MovingContent({ work, index, className = "" }) {
       <div className="work-copy">
         <h3>{work.title}</h3>
         <p>{work.description}</p>
-        <button className="work-link" type="button">See Work <span>↗</span></button>
+        <button type="button" className="work-link">See Work <span>↗</span></button>
       </div>
       <div className="work-image"><span>WORK<br />IMAGE</span></div>
     </div>
@@ -72,7 +72,12 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
   };
 
   const goToContact = () => {
-    window.location.hash = "contact";
+    // Use the same routing system as the other navigation controls, but
+    // explicitly dispatch popstate so the route change is handled immediately.
+    const target = "contact";
+    if (window.location.hash === `#${target}`) return;
+    window.history.pushState({}, "", `#${target}`);
+    window.dispatchEvent(new PopStateEvent("popstate"));
   };
 
   useEffect(() => {
@@ -165,10 +170,10 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
 
       {hasPrevious && (
         <button
+          type="button"
           className="previous-arrow"
           onClick={() => navigateWork(current - 1, "previous")}
           aria-label="Previous work"
-          type="button"
         >
           ←
         </button>
@@ -176,16 +181,21 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
 
       {hasNext && (
         <button
+          type="button"
           className="next-arrow"
           onClick={() => navigateWork(current + 1, "next")}
           aria-label="Next work"
-          type="button"
         >
           →
         </button>
       )}
 
-      <button className="bottom-link" onClick={goToContact} type="button">
+      <button
+        type="button"
+        className="bottom-link"
+        onClick={goToContact}
+        aria-label="Go to Contact page"
+      >
         Collab / Contact <span>→</span>
       </button>
     </main>
