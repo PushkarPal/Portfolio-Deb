@@ -72,25 +72,22 @@ export default function Projects({ navigate, initialWork }) {
     const onWheel = (event) => {
       if (Math.abs(event.deltaY) < 10 || wheelLocked.current) return;
 
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const previous = currentRef.current;
+      const next = direction > 0
+        ? Math.min(works.length - 1, previous + 1)
+        : Math.max(0, previous - 1);
+
+      if (next === previous) return;
+
       wheelLocked.current = true;
-
-      setCurrent((previous) => {
-        const next = event.deltaY > 0
-          ? Math.min(works.length - 1, previous + 1)
-          : Math.max(0, previous - 1);
-
-        if (next !== previous) {
-          navigate(`work/${next + 1}`, "vertical");
-        } else {
-          wheelLocked.current = false;
-        }
-
-        return next;
-      });
+      currentRef.current = next;
+      setCurrent(next);
+      navigate(`work/${next + 1}`, "vertical");
 
       window.setTimeout(() => {
         wheelLocked.current = false;
-      }, 800);
+      }, 850);
     };
 
     window.addEventListener("wheel", onWheel, { passive: true });
