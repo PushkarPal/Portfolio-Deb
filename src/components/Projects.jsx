@@ -20,7 +20,7 @@ function Menu({ navigate }) {
   );
 }
 
-function WorkSlide({ work, index, navigate }) {
+function WorkSlide({ work, index, navigateWork, navigate }) {
   const reversed = index % 2 === 1;
   const hasNext = index < works.length - 1;
   const hasPrevious = index > 0;
@@ -38,7 +38,7 @@ function WorkSlide({ work, index, navigate }) {
       {hasPrevious && (
         <button
           className="previous-arrow"
-          onClick={() => navigate(`work/${index}`, "horizontal")}
+          onClick={() => navigateWork(index - 1, "horizontal-reverse")}
           aria-label="Previous work"
         >
           ←
@@ -48,7 +48,7 @@ function WorkSlide({ work, index, navigate }) {
       {hasNext && (
         <button
           className="next-arrow"
-          onClick={() => navigate(`work/${index + 2}`, "horizontal")}
+          onClick={() => navigateWork(index + 1, "horizontal")}
           aria-label="Next work"
         >
           →
@@ -68,6 +68,21 @@ export default function Projects({ navigate, initialWork }) {
   const wheelLocked = useRef(false);
   const unlockTimer = useRef(null);
 
+  const navigateWork = (nextIndex, transition = "vertical") => {
+    const next = Math.max(0, Math.min(works.length - 1, nextIndex));
+    const previous = currentRef.current;
+    if (next === previous) return;
+
+    currentRef.current = next;
+    setCurrent(next);
+
+    if (transition === "horizontal" || transition === "horizontal-reverse") {
+      navigate(`work/${next + 1}`, transition);
+    } else {
+      window.history.replaceState({}, "", `#work/${next + 1}`);
+    }
+  };
+
   useEffect(() => {
     currentRef.current = initialWork;
     setCurrent(initialWork);
@@ -75,11 +90,18 @@ export default function Projects({ navigate, initialWork }) {
 
   useEffect(() => {
     const onWheel = (event) => {
-      if (Math.abs(event.deltaY) < 10 || wheelLocked.current) return;
+      if (Math.abs(event.deltaY) < 12) return;
 
-      const direction = event.deltaY > 0 ? 1 : -1;
+      if (wheelLocked.current) {
+        window.clearTimeout(unlockTimer.current);
+        unlockTimer.current = window.setTimeout(() => {
+          wheelLocked.current = false;
+        }, 260);
+        return;
+      }
+
       const previous = currentRef.current;
-      const next = direction > 0
+      const next = event.deltaY > 0
         ? Math.min(works.length - 1, previous + 1)
         : Math.max(0, previous - 1);
 
@@ -94,7 +116,7 @@ export default function Projects({ navigate, initialWork }) {
       window.clearTimeout(unlockTimer.current);
       unlockTimer.current = window.setTimeout(() => {
         wheelLocked.current = false;
-      }, 450);
+      }, 320);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -124,6 +146,7 @@ export default function Projects({ navigate, initialWork }) {
               key={work.number}
               work={work}
               index={index}
+              navigateWork={navigateWork}
               navigate={navigate}
             />
           ))}
