@@ -29,7 +29,7 @@ export default function About({ navigate }) {
           <span>CLIENT<br />PHOTO</span>
         </div>
         <div className="about-content">
-          <p className="eyebrow">A LITTLE ABOUT ME</p>
+          <p className="eyebrow"> </p>
           <p className="about-lead">This space will hold the introduction written by the client.</p>
           <p className="about-body">We'll add Deb's own story here once the final information is available. The structure is intentionally ready for real content without changing the design.</p>
 
