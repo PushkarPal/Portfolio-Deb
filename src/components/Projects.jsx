@@ -25,7 +25,7 @@ function WorkSlide({ work, index, navigateWork, navigate }) {
   const hasPrevious = index > 0;
 
   return (
-    <article className={`work-slide ${reversed ? "work-slide--reversed" : ""}`}>
+    <article className={`work-slide float-stagger ${reversed ? "work-slide--reversed" : ""}`}>
       <div className="work-copy">
         <h3>{work.title}</h3>
         <p>{work.description}</p>
@@ -72,8 +72,6 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
     if (next === previous) return;
 
     if (transition === "horizontal" || transition === "horizontal-reverse") {
-      // Let App render both pages simultaneously so the arrow transition is
-      // a continuous horizontal flow rather than a vanish-and-enter effect.
       navigate(`work/${next + 1}`, transition);
       return;
     }
@@ -130,7 +128,7 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
 
   return (
     <main className="work-page">
-      <div className="work-topline">
+      <div className="work-topline float-stagger">
         <Menu navigate={navigate} />
         <div>
           <p className="eyebrow">PORTFOLIO</p>
@@ -139,18 +137,9 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
         <p className="work-count">{String(current + 1).padStart(2, "0")} / 05</p>
       </div>
       <div className="work-viewport">
-        <div
-          className="work-track"
-          style={{ transform: `translate3d(0, -${current * 82}vh, 0)` }}
-        >
+        <div className="work-track" style={{ transform: `translate3d(0, -${current * 82}vh, 0)` }}>
           {works.map((work, index) => (
-            <WorkSlide
-              key={index}
-              work={work}
-              index={index}
-              navigateWork={navigateWork}
-              navigate={navigate}
-            />
+            <WorkSlide key={index} work={work} index={index} navigateWork={navigateWork} navigate={navigate} />
           ))}
         </div>
       </div>
