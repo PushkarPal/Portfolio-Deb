@@ -72,8 +72,6 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
   };
 
   const goToContact = () => {
-    // Contact must work from every Work slide, independently of the React
-    // transition state. Navigate to the SPA entry point with the contact hash.
     window.location.assign(`${window.location.pathname}#contact`);
   };
 
@@ -177,7 +175,13 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
         </button>
       )}
 
-      <button type="button" className="bottom-link" onClick={goToContact} aria-label="Go to Contact page">
+      <button
+        type="button"
+        className="bottom-link"
+        style={{ zIndex: 1000, pointerEvents: "auto" }}
+        onClick={goToContact}
+        aria-label="Go to Contact page"
+      >
         Collab / Contact <span>→</span>
       </button>
     </main>
