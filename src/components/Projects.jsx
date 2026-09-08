@@ -72,12 +72,11 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
   };
 
   const goToContact = () => {
-    // Use the same routing system as the other navigation controls, but
-    // explicitly dispatch popstate so the route change is handled immediately.
-    const target = "contact";
-    if (window.location.hash === `#${target}`) return;
-    window.history.pushState({}, "", `#${target}`);
-    window.dispatchEvent(new PopStateEvent("popstate"));
+    // Let the browser emit the normal hashchange event so App's existing
+    // history/hash routing handles the transition exactly like other pages.
+    if (window.location.hash !== "#contact") {
+      window.location.hash = "#contact";
+    }
   };
 
   useEffect(() => {
