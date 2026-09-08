@@ -3,6 +3,10 @@ export default function Hero({ navigate }) {
     <main className="screen home-screen">
       <div className="home-divider" aria-hidden="true" />
 
+      <div className="home-portrait" aria-label="Debabrat Behera">
+        <img src="/Portfolio-Deb/debabrat-behera.png" alt="Debabrat Behera" />
+      </div>
+
       <div className="home-copy">
         <div className="home-identity">
           <p className="home-name">Debabrat Behera</p>
@@ -18,10 +22,6 @@ export default function Hero({ navigate }) {
             See My Work <span>→</span>
           </button>
         </div>
-      </div>
-
-      <div className="portrait-placeholder home-portrait" aria-label="Client photo placeholder">
-        <span>CLIENT<br />PHOTO</span>
       </div>
     </main>
   );
