@@ -131,8 +131,10 @@ button { color: inherit; }
 
 .page-transition { animation-duration: .65s; animation-timing-function: cubic-bezier(.76,0,.24,1); animation-fill-mode: both; }
 .page-transition--vertical { animation-name: pageFromBottom; }
+.page-transition--vertical-reverse { animation-name: pageFromTop; }
 .page-transition--horizontal { animation-name: pageFromRight; }
 @keyframes pageFromBottom { from { opacity: 0; transform: translateY(100vh); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pageFromTop { from { opacity: 0; transform: translateY(-100vh); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pageFromRight { from { opacity: 0; transform: translateX(100vw); } to { opacity: 1; transform: translateX(0); } }
 
 @media (max-width: 900px) {
