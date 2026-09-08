@@ -72,11 +72,9 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
   };
 
   const goToContact = () => {
-    // Let the browser emit the normal hashchange event so App's existing
-    // history/hash routing handles the transition exactly like other pages.
-    if (window.location.hash !== "#contact") {
-      window.location.hash = "#contact";
-    }
+    // Contact must work from every Work slide, independently of the React
+    // transition state. Navigate to the SPA entry point with the contact hash.
+    window.location.assign(`${window.location.pathname}#contact`);
   };
 
   useEffect(() => {
@@ -168,33 +166,18 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
       </div>
 
       {hasPrevious && (
-        <button
-          type="button"
-          className="previous-arrow"
-          onClick={() => navigateWork(current - 1, "previous")}
-          aria-label="Previous work"
-        >
+        <button type="button" className="previous-arrow" onClick={() => navigateWork(current - 1, "previous")} aria-label="Previous work">
           ←
         </button>
       )}
 
       {hasNext && (
-        <button
-          type="button"
-          className="next-arrow"
-          onClick={() => navigateWork(current + 1, "next")}
-          aria-label="Next work"
-        >
+        <button type="button" className="next-arrow" onClick={() => navigateWork(current + 1, "next")} aria-label="Next work">
           →
         </button>
       )}
 
-      <button
-        type="button"
-        className="bottom-link"
-        onClick={goToContact}
-        aria-label="Go to Contact page"
-      >
+      <button type="button" className="bottom-link" onClick={goToContact} aria-label="Go to Contact page">
         Collab / Contact <span>→</span>
       </button>
     </main>
