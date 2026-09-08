@@ -21,7 +21,7 @@ export default function Hero({ navigate }) {
         />
       </div>
 
-      <div className="home-copy">
+      <div className="home-copy float-stagger">
         <div className="home-identity">
           <p className="home-name">Debabrat Behera</p>
           <p className="home-occupation">Web Developer</p>
