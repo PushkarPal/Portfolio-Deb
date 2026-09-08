@@ -20,7 +20,7 @@ function Menu({ navigate }) {
   );
 }
 
-function WorkSlide({ work, index, navigateWork, navigate }) {
+function WorkSlide({ work, index, moveWithWheel, navigate }) {
   const reversed = index % 2 === 1;
   const hasNext = index < works.length - 1;
 
@@ -36,7 +36,7 @@ function WorkSlide({ work, index, navigateWork, navigate }) {
       {hasNext && (
         <button
           className="next-arrow"
-          onClick={() => navigateWork(index + 1)}
+          onClick={() => navigate(`work/${index + 2}`, "horizontal")}
           aria-label="Next work"
         >
           →
@@ -55,46 +55,10 @@ export default function Projects({ navigate, initialWork }) {
   const wheelLocked = useRef(false);
   const unlockTimer = useRef(null);
 
-  const moveToWork = (nextIndex, transitionDirection) => {
-    const next = Math.max(0, Math.min(works.length - 1, nextIndex));
-    const previous = currentRef.current;
-    if (next === previous) return;
-
-    currentRef.current = next;
-    setCurrent(next);
-
-    // Change the hash without asking App to remount Projects.
-    window.history.replaceState({}, "", `#work/${next + 1}`);
-
-    if (transitionDirection === "horizontal") {
-      // Arrow navigation uses the horizontal page transition only.
-      navigate(`work/${next + 1}`, "horizontal");
-    }
-  };
-
   useEffect(() => {
     currentRef.current = initialWork;
     setCurrent(initialWork);
   }, [initialWork]);
-
-  useEffect(() => {
-    const onPopState = () => {
-      const match = window.location.hash.match(/^#work\/(\d+)$/);
-      if (!match) return;
-
-      const next = Math.max(0, Math.min(works.length - 1, Number(match[1]) - 1));
-      currentRef.current = next;
-      setCurrent(next);
-      wheelLocked.current = true;
-      window.clearTimeout(unlockTimer.current);
-      unlockTimer.current = window.setTimeout(() => {
-        wheelLocked.current = false;
-      }, 500);
-    };
-
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
 
   useEffect(() => {
     const onWheel = (event) => {
@@ -110,12 +74,17 @@ export default function Projects({ navigate, initialWork }) {
 
       event.preventDefault();
       wheelLocked.current = true;
+      currentRef.current = next;
+      setCurrent(next);
+
+      // Keep wheel navigation inside the mounted Projects page.
+      // This prevents trackpad momentum from creating/removing listeners.
+      window.history.replaceState({}, "", `#work/${next + 1}`);
+
       window.clearTimeout(unlockTimer.current);
       unlockTimer.current = window.setTimeout(() => {
         wheelLocked.current = false;
-      }, 650);
-
-      moveToWork(next, "vertical");
+      }, 700);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -145,7 +114,7 @@ export default function Projects({ navigate, initialWork }) {
               key={work.number}
               work={work}
               index={index}
-              navigateWork={moveToWork}
+              moveWithWheel={null}
               navigate={navigate}
             />
           ))}
