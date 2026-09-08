@@ -61,10 +61,12 @@ function WorkSlide({ work, index, navigate }) {
 
 export default function Projects({ navigate, initialWork }) {
   const [current, setCurrent] = useState(initialWork);
+  const currentRef = useRef(initialWork);
   const wheelLocked = useRef(false);
 
   useEffect(() => {
     setCurrent(initialWork);
+    currentRef.current = initialWork;
     wheelLocked.current = false;
   }, [initialWork]);
 
