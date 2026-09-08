@@ -1,1 +1,45 @@
-export default function About() { return (<section id="about" className="py-20 bg-slate-800/50"><div className="container mx-auto px-4"><h2 className="text-3xl font-bold mb-8 text-center">About Me</h2><div className="max-w-3xl mx-auto text-slate-300 space-y-4"><p>Hello! My name is Pushkar and I enjoy creating things that live on the internet. My interest in web development started back when I decided to try editing custom Tumblr themes...</p><p>Fast-forward to today, and I've had the privilege of building software for a variety of clients.</p></div></div></section>); }
+function Menu({ navigate }) {
+  return (
+    <div className="menu-wrap">
+      <button className="menu-button" aria-label="Open navigation">
+        <span /><span /><span />
+      </button>
+      <div className="menu-panel">
+        <button onClick={() => navigate("home", "vertical")}>Home</button>
+        <button onClick={() => navigate("work/1", "horizontal")}>See My Work</button>
+      </div>
+    </div>
+  );
+}
+
+export default function About({ navigate }) {
+  return (
+    <main className="page about-page">
+      <div className="page-heading">
+        <Menu navigate={navigate} />
+        <h2>About Me</h2>
+      </div>
+
+      <section className="about-layout">
+        <div className="about-image portrait-placeholder">
+          <span>CLIENT<br />PHOTO</span>
+        </div>
+        <div className="about-content">
+          <p className="eyebrow">A LITTLE ABOUT ME</p>
+          <p className="about-lead">This space will hold the introduction written by the client.</p>
+          <p className="about-body">We'll add Deb's own story here once the final information is available. The structure is intentionally ready for real content without changing the design.</p>
+
+          <div className="interest-grid">
+            <article><span>01</span><h3>Hobbies</h3><p>To be added.</p></article>
+            <article><span>02</span><h3>Games</h3><p>To be added.</p></article>
+            <article><span>03</span><h3>Music</h3><p>Playlist coming soon.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <button className="bottom-link" onClick={() => navigate("contact", "vertical")}>
+        Want to Collab / Contact <span>→</span>
+      </button>
+    </main>
+  );
+}
