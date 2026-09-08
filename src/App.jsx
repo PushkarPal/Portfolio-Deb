@@ -34,16 +34,13 @@ export default function App() {
     setRoute(nextRoute);
 
     window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      setTransition(null);
-    }, TRANSITION_MS);
+    timerRef.current = window.setTimeout(() => setTransition(null), TRANSITION_MS);
   }, []);
 
   const navigate = useCallback((nextRoute, nextDirection = "vertical") => {
     if (nextRoute === routeRef.current) return;
     window.history.pushState({}, "", `#${nextRoute}`);
     startTransition(nextRoute, nextDirection);
-    window.scrollTo({ top: 0, behavior: "auto" });
   }, [startTransition]);
 
   useEffect(() => {
@@ -75,21 +72,11 @@ export default function App() {
 
   const renderPage = (pageRoute, interactive = true) => {
     const workMatch = pageRoute.match(/^work(?:\/(\d+))?$/);
-    const workIndex = workMatch
-      ? Math.max(0, Math.min(4, Number(workMatch[1] || 1) - 1))
-      : 0;
+    const workIndex = workMatch ? Math.max(0, Math.min(4, Number(workMatch[1] || 1) - 1)) : 0;
 
     if (pageRoute === "about") return <About navigate={navigate} />;
     if (pageRoute === "contact") return <Contact navigate={navigate} />;
-    if (workMatch) {
-      return (
-        <Projects
-          navigate={navigate}
-          initialWork={workIndex}
-          interactive={interactive}
-        />
-      );
-    }
+    if (workMatch) return <Projects navigate={navigate} initialWork={workIndex} interactive={interactive} />;
     return <Home navigate={navigate} />;
   };
 
