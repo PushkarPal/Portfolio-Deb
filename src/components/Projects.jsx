@@ -47,7 +47,7 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
   const startLocalFlow = (nextIndex, direction) => {
     const next = Math.max(0, Math.min(works.length - 1, nextIndex));
     const previous = currentRef.current;
-    if (next === previous || incoming !== null) return;
+    if (next === previous || incoming !== null) return false;
 
     currentRef.current = next;
     setFlowDirection(direction);
@@ -58,23 +58,25 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
       setCurrent(next);
       setIncoming(null);
     }, 720);
+
+    return true;
   };
 
-  const navigateWork = (nextIndex, direction = "next") => {
+  const navigateWork = (nextIndex, direction) => {
     const next = Math.max(0, Math.min(works.length - 1, nextIndex));
     const previous = currentRef.current;
-    if (next === previous) return;
+    if (next === previous || incoming !== null) return;
 
-    window.history.pushState({}, "", `#work/${next + 1}`);
     navigate(`work/${next + 1}`, "work-local");
+    startLocalFlow(next, direction);
   };
 
   useEffect(() => {
     const previous = previousRouteWork.current;
 
-    if (initialWork !== previous) {
+    if (initialWork !== previous && incoming === null) {
       startLocalFlow(initialWork, initialWork > previous ? "next" : "previous");
-    } else {
+    } else if (initialWork === previous) {
       currentRef.current = initialWork;
       setCurrent(initialWork);
     }
@@ -110,9 +112,10 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
 
       event.preventDefault();
       wheelLocked.current = true;
-      currentRef.current = next;
-      setCurrent(next);
-      window.history.replaceState({}, "", `#work/${next + 1}`);
+
+      if (startLocalFlow(next, next > previous ? "down" : "up")) {
+        window.history.replaceState({}, "", `#work/${next + 1}`);
+      }
 
       window.clearTimeout(unlockTimer.current);
       unlockTimer.current = window.setTimeout(() => {
@@ -129,25 +132,28 @@ export default function Projects({ navigate, initialWork, interactive = true }) 
 
   const hasPrevious = current > 0;
   const hasNext = current < works.length - 1;
+  const outgoingClass = incoming !== null ? `work-content--outgoing-${flowDirection}` : "";
 
   return (
     <main className="work-page">
       <div className="work-topline">
         <Menu navigate={navigate} />
-        <div>
-          <h2>What I do?</h2>
-        </div>
+        <h2>What I do?</h2>
         <p className="work-count">{String(current + 1).padStart(2, "0")} / 05</p>
       </div>
 
       <div className="work-viewport">
         <div className="work-content-stage">
-          <MovingContent work={works[current]} index={current} className="work-content--active" />
+          <MovingContent
+            work={works[current]}
+            index={current}
+            className={`work-content--active ${outgoingClass}`}
+          />
           {incoming !== null && (
             <MovingContent
               work={works[incoming]}
               index={incoming}
-              className={`work-content--incoming work-content--${flowDirection}`}
+              className={`work-content--incoming work-content--incoming-${flowDirection}`}
             />
           )}
         </div>
