@@ -1,1 +1,45 @@
-export default function Contact() { return (<section id="contact" className="py-20"><div className="container mx-auto px-4 text-center max-w-2xl"><h2 className="text-3xl font-bold mb-6">Get In Touch</h2><p className="text-slate-400 mb-8">I'm currently looking for any new opportunities, my inbox is always open. Whether you have a question or just want to say hi, I'll try my best to get back to you!</p><a href="mailto:hello@example.com" className="border border-blue-400 text-blue-400 hover:bg-blue-400/10 px-8 py-3 rounded-lg font-medium transition-colors">Say Hello</a></div></section>); }
+const links = [
+  { name: "Instagram", handle: "@username", icon: "◎" },
+  { name: "LinkedIn", handle: "Profile", icon: "in" },
+  { name: "Gmail", handle: "email@example.com", icon: "✉" },
+  { name: "Reddit", handle: "u/username", icon: "●" },
+];
+
+function Menu({ navigate }) {
+  return (
+    <div className="menu-wrap">
+      <button className="menu-button" aria-label="Open navigation">
+        <span /><span /><span />
+      </button>
+      <div className="menu-panel">
+        <button onClick={() => navigate("home", "vertical")}>Home</button>
+        <button onClick={() => navigate("about", "vertical")}>About Me</button>
+      </div>
+    </div>
+  );
+}
+
+export default function Contact({ navigate }) {
+  return (
+    <main className="page contact-page">
+      <div className="page-heading">
+        <Menu navigate={navigate} />
+        <h2>Contact Me</h2>
+      </div>
+
+      <section className="contact-content">
+        <p className="eyebrow">LET'S TALK</p>
+        <h3>Have an idea?<br />Let's build something.</h3>
+        <div className="contact-links">
+          {links.map((link) => (
+            <a href="#" key={link.name} onClick={(event) => event.preventDefault()}>
+              <span className="social-icon">{link.icon}</span>
+              <span><strong>{link.name}</strong><small>{link.handle}</small></span>
+              <span className="contact-arrow">↗</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
