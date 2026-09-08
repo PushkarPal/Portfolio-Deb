@@ -5,7 +5,7 @@ export default function Hero({ navigate }) {
 
       <div className="home-copy">
         <div className="home-identity">
-          <p className="home-name">Debabyat Behera</p>
+          <p className="home-name">Debabrat Behera</p>
           <p className="home-occupation">Web Developer</p>
           <p className="home-quote">“one line of thought/quote”</p>
         </div>
