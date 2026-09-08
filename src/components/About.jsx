@@ -20,6 +20,10 @@ export default function About({ navigate }) {
         <h2>About Me</h2>
       </div>
 
+      <button className="explore-work-button" onClick={() => navigate("work/1", "horizontal")}>
+        Explore my work <span>→</span>
+      </button>
+
       <section className="about-layout">
         <div className="about-image portrait-placeholder">
           <span>CLIENT<br />PHOTO</span>
