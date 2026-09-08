@@ -22,12 +22,12 @@ function Menu({ navigate }) {
 export default function Contact({ navigate }) {
   return (
     <main className="page contact-page">
-      <div className="page-heading">
+      <div className="page-heading float-stagger">
         <Menu navigate={navigate} />
         <h2>Contact Me</h2>
       </div>
 
-      <section className="contact-content">
+      <section className="contact-content float-stagger">
         <h3>Have an idea?<br />Let's deploy it</h3>
         <div className="contact-links">
           {links.map((link) => (
