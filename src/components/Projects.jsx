@@ -1,1 +1,83 @@
-export default function Projects() { return (<section id="projects" className="py-20 bg-slate-800/50"><div className="container mx-auto px-4"><h2 className="text-3xl font-bold mb-12 text-center">Some Things I've Built</h2><div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"><div className="bg-slate-800 p-6 rounded-lg border border-slate-700 hover:-translate-y-2 transition-transform"><h3 className="text-xl font-bold mb-2">Project One</h3><p className="text-slate-400 mb-4">A web app for tracking personal finances and budgets.</p><div className="flex gap-3 text-sm text-blue-400"><span>React</span><span>Node.js</span></div></div></div></div></section>); }
+import { useEffect, useState } from "react";
+
+const works = [1, 2, 3, 4, 5].map((number) => ({
+  number: String(number).padStart(2, "0"),
+  title: `Work ${number}`,
+  description: "Project description will be added once the client's work details are available.",
+}));
+
+function Menu({ navigate }) {
+  return (
+    <div className="menu-wrap">
+      <button className="menu-button" aria-label="Open navigation">
+        <span /><span /><span />
+      </button>
+      <div className="menu-panel">
+        <button onClick={() => navigate("home", "horizontal")}>Home</button>
+        <button onClick={() => navigate("about", "vertical")}>About Me</button>
+      </div>
+    </div>
+  );
+}
+
+function WorkSlide({ work, index, navigate }) {
+  const reversed = index % 2 === 1;
+
+  return (
+    <article className={`work-slide ${reversed ? "work-slide--reversed" : ""}`}>
+      <div className="work-copy">
+        <p className="work-number">{work.number}</p>
+        <h3>{work.title}</h3>
+        <p>{work.description}</p>
+        <button className="work-link">See Work <span>↗</span></button>
+      </div>
+      <div className="work-image"><span>WORK<br />IMAGE</span></div>
+      <button className="next-arrow" onClick={() => navigate(`work/${index + 2}`, "horizontal")} aria-label="Next work">
+        →
+      </button>
+      <button className="bottom-link" onClick={() => navigate("contact", "vertical")}>
+        Collab / Contact <span>→</span>
+      </button>
+    </article>
+  );
+}
+
+export default function Projects({ navigate, initialWork }) {
+  const [current, setCurrent] = useState(initialWork);
+
+  useEffect(() => {
+    setCurrent(initialWork);
+  }, [initialWork]);
+
+  useEffect(() => {
+    const onWheel = (event) => {
+      if (Math.abs(event.deltaY) < 10) return;
+      const next = event.deltaY > 0 ? Math.min(works.length - 1, current + 1) : Math.max(0, current - 1);
+      if (next !== current) {
+        navigate(`work/${next + 1}`, "vertical");
+        setCurrent(next);
+      }
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: true });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, [current, navigate]);
+
+  return (
+    <main className="work-page">
+      <div className="work-topline">
+        <Menu navigate={navigate} />
+        <div>
+          <p className="eyebrow">PORTFOLIO</p>
+          <h2>What I do?</h2>
+        </div>
+        <p className="work-count">{String(current + 1).padStart(2, "0")} / 05</p>
+      </div>
+      <div className="work-viewport">
+        <div className="work-track" style={{ transform: `translateY(-${current * 100}%)` }}>
+          {works.map((work, index) => <WorkSlide key={work.number} work={work} index={index} navigate={navigate} />)}
+        </div>
+      </div>
+    </main>
+  );
+}
