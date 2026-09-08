@@ -20,9 +20,10 @@ function Menu({ navigate }) {
   );
 }
 
-function WorkSlide({ work, index, moveWithWheel, navigate }) {
+function WorkSlide({ work, index, navigate }) {
   const reversed = index % 2 === 1;
   const hasNext = index < works.length - 1;
+  const hasPrevious = index > 0;
 
   return (
     <article className={`work-slide ${reversed ? "work-slide--reversed" : ""}`}>
@@ -33,6 +34,17 @@ function WorkSlide({ work, index, moveWithWheel, navigate }) {
         <button className="work-link">See Work <span>↗</span></button>
       </div>
       <div className="work-image"><span>WORK<br />IMAGE</span></div>
+
+      {hasPrevious && (
+        <button
+          className="previous-arrow"
+          onClick={() => navigate(`work/${index}`, "horizontal")}
+          aria-label="Previous work"
+        >
+          ←
+        </button>
+      )}
+
       {hasNext && (
         <button
           className="next-arrow"
@@ -42,6 +54,7 @@ function WorkSlide({ work, index, moveWithWheel, navigate }) {
           →
         </button>
       )}
+
       <button className="bottom-link" onClick={() => navigate("contact", "vertical")}>
         Collab / Contact <span>→</span>
       </button>
@@ -76,15 +89,12 @@ export default function Projects({ navigate, initialWork }) {
       wheelLocked.current = true;
       currentRef.current = next;
       setCurrent(next);
-
-      // Keep wheel navigation inside the mounted Projects page.
-      // This prevents trackpad momentum from creating/removing listeners.
       window.history.replaceState({}, "", `#work/${next + 1}`);
 
       window.clearTimeout(unlockTimer.current);
       unlockTimer.current = window.setTimeout(() => {
         wheelLocked.current = false;
-      }, 700);
+      }, 450);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -114,7 +124,6 @@ export default function Projects({ navigate, initialWork }) {
               key={work.number}
               work={work}
               index={index}
-              moveWithWheel={null}
               navigate={navigate}
             />
           ))}
