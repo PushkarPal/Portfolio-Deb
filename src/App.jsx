@@ -65,8 +65,10 @@ export default function App() {
     };
 
     window.addEventListener("popstate", onLocationChange);
+    window.addEventListener("hashchange", onLocationChange);
     return () => {
       window.removeEventListener("popstate", onLocationChange);
+      window.removeEventListener("hashchange", onLocationChange);
       window.clearTimeout(timerRef.current);
     };
   }, [startTransition]);
@@ -93,6 +95,7 @@ export default function App() {
 
   return (
     <div className="site-shell">
+      <div className="gradient-canvas" aria-hidden="true" />
       {transition ? (
         <div className={`route-transition route-transition--${transition.direction}`}>
           <div className="route-layer route-layer--outgoing">
