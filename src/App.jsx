@@ -30,11 +30,13 @@ export default function App() {
     if (nextRoute === previousRoute) return;
 
     routeRef.current = nextRoute;
-    setTransition({ from: previousRoute, to: nextRoute, direction });
+    setTransition({ from: previousRoute, direction });
     setRoute(nextRoute);
 
     window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => setTransition(null), TRANSITION_MS);
+    timerRef.current = window.setTimeout(() => {
+      setTransition(null);
+    }, TRANSITION_MS);
   }, []);
 
   const navigate = useCallback((nextRoute, nextDirection = "vertical") => {
@@ -58,7 +60,6 @@ export default function App() {
       }
 
       startTransition(nextRoute, direction);
-      window.scrollTo({ top: 0, behavior: "auto" });
     };
 
     window.addEventListener("popstate", onLocationChange);
@@ -72,31 +73,41 @@ export default function App() {
 
   const renderPage = (pageRoute, interactive = true) => {
     const workMatch = pageRoute.match(/^work(?:\/(\d+))?$/);
-    const workIndex = workMatch ? Math.max(0, Math.min(4, Number(workMatch[1] || 1) - 1)) : 0;
+    const workIndex = workMatch
+      ? Math.max(0, Math.min(4, Number(workMatch[1] || 1) - 1))
+      : 0;
 
     if (pageRoute === "about") return <About navigate={navigate} />;
     if (pageRoute === "contact") return <Contact navigate={navigate} />;
-    if (workMatch) return <Projects navigate={navigate} initialWork={workIndex} interactive={interactive} />;
+    if (workMatch) {
+      return (
+        <Projects
+          navigate={navigate}
+          initialWork={workIndex}
+          interactive={interactive}
+        />
+      );
+    }
     return <Home navigate={navigate} />;
   };
 
   return (
     <div className="site-shell">
       <div className="gradient-canvas" aria-hidden="true" />
-      {transition ? (
-        <div className={`route-transition route-transition--${transition.direction}`}>
+
+      <div
+        className={`route-stage${transition ? ` route-stage--${transition.direction}` : ""}`}
+      >
+        {transition && (
           <div className="route-layer route-layer--outgoing">
             {renderPage(transition.from, false)}
           </div>
-          <div className="route-layer route-layer--incoming">
-            {renderPage(transition.to, true)}
-          </div>
-        </div>
-      ) : (
+        )}
+
         <div className="route-layer route-layer--current">
           {renderPage(route, true)}
         </div>
-      )}
+      </div>
     </div>
   );
 }
